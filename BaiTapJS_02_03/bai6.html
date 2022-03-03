@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p id="text"> công ty cổ phần rikkeisoft</p>
+    <button type="button" onClick="changeText()">Change</button>
+    <script>
+        function changeText() {
+            let texts = document.getElementById('text').innerHTML.split(' ');
+            const lengthArr = texts.length
+            var maxLength = 0
+            var strLength = []
+            for (let i = 0; i < lengthArr; i++) {
+                if(texts[i].length > maxLength){
+                    maxLength = texts[i].length
+                    strLength = texts[i]
+                }
+            }
+            return document.getElementById('text').innerText = strLength
+            
+        }
+        
+    </script>
+</body>
+</html>
