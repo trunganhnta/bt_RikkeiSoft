@@ -49,6 +49,7 @@ function Component() {
   }, [usersJava.length, usersReact.length]);
 
   const INIT_DATA = {
+    index:0,
     name: "",
     age: "",
     classType: "react",
@@ -66,8 +67,8 @@ function Component() {
     });
   };
 
-  //xu li submit
-  const handleSubmit = () => {
+  //add data 
+  const addData = () => {
     if (formData.classType === "react") {
       usersReact.push(formData);
       setUserReact([...usersReact]);
@@ -76,18 +77,43 @@ function Component() {
       setUserJava([...usersJava]);
     }
     setFormData(INIT_DATA);
+  }
+
+  // update data 
+  const updateChange = () => {
+    if(formData.classType ==='react'){
+      usersReact[formData.index].name = formData.name;
+      usersReact[formData.index].age = formData.age;
+      setUserReact([...usersReact])
+    }else if(formData.classType === 'java'){
+      usersJava[formData.index].name = formData.name;
+      usersJava[formData.index].age = formData.age;
+      setUserJava([...usersJava])
+    }
+    document.getElementById('submit').innerHTML = 'Add'
+  }
+
+  //xu li submit
+  const handleSubmit = () => {
+    if(document.getElementById('submit').innerHTML === 'Add'){
+      addData()
+    }else{
+      updateChange()
+    }
   };
 
-  var curent
   //sua du lieu
-  const updateData = (item) => {
+  const updateData = (item,index) => {
     setFormData({
       ...formData,
       name: item.name,
       age: item.age,
       classType: item.classType,
+      index: index,
     });
+    document.getElementById('submit').innerHTML = 'Update'
   };
+
   return (
     <div>
       <h1>List member of Java Class</h1>
@@ -99,7 +125,7 @@ function Component() {
               name={item.name}
               age={item.age}
               handleTransfer={() => transferJavaToReactClass(item, index)}
-              handleUpdate={() => updateData(item)}
+              handleUpdate={() => updateData(item,index)}
             />
           );
         })
@@ -116,7 +142,7 @@ function Component() {
               name={item.name}
               age={item.age}
               handleTransfer={() => transferReactToJavaClass(item, index)}
-              handleUpdate={() => updateData(item)}
+              handleUpdate={() => updateData(item,index)}
             />
           );
         })
@@ -155,7 +181,7 @@ function Component() {
           <option value="java">Java</option>
         </select>
         <br />
-        <button type="submit">Add</button>
+        <button id="submit" type="submit">Add</button>
       </form>
     </div>
   );
