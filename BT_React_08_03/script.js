@@ -91,6 +91,7 @@ function Component() {
       setUserJava([...usersJava])
     }
     document.getElementById('submit').innerHTML = 'Add'
+    setFormData(INIT_DATA);
   }
 
   //xu li submit
