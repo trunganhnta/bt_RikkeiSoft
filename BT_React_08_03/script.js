@@ -8,7 +8,7 @@ function Component() {
   ]);
   const [usersReact, setUserReact] = React.useState([
     { name: "Phong", age: 20, classType: "react" },
-    { name: "Van", age: 20, classType: "react" },
+    { name: "Van", age: 18, classType: "react" },
   ]);
 
   const transferJavaToReactClass = (item, index) => {
@@ -137,14 +137,18 @@ function Component() {
     });
     setUserReact(newArrUserReact);
   };
-
   const handleSort = () => {
-    usersJava.sort(function (a, b) {
-      return a.age - b.age;
-    });
-    setUserJava(...usersJava);
+    const newusersJava = [...usersJava];
+    const arrUsersJavaSorted = newusersJava.sort((a, b) =>
+      a.age > b.age ? 1 : -1
+    );
+    const newusersReact = [...usersReact];
+    const arrUserReactSorted = newusersReact.sort((a, b) =>
+      a.age > b.age ? 1 : -1
+    );
+    setUserJava(arrUsersJavaSorted);
+    setUserReact(arrUserReactSorted);
   };
-  console.log(usersJava);
 
   return (
     <div>
@@ -168,6 +172,7 @@ function Component() {
       <h1>List member of Java Class</h1>
       {usersJava.length > 0 ? (
         usersJava.map((item, index) => {
+          console.log(item);
           return (
             <User
               key={index}
