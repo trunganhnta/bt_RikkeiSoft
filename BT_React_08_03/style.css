@@ -1,14 +1,18 @@
-span{
-    font-size:30px;
-    margin: 40px;
+span {
+  font-size: 30px;
+  margin: 40px;
 }
-button{
-    width: 100px;
-    height: 40px;
-    border: 2px solid black;
-    border-radius: 10%;
-    font-weight: bold;
+button {
+  width: 120px;
+  height: 40px;
+  border: 2px solid black;
+  border-radius: 10%;
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 10px;
+}
+#search{
     font-size: 20px;
-    cursor: pointer;
-    margin: 10px;
+    height: 25px;
 }
