@@ -3,7 +3,7 @@ span {
   margin: 40px;
 }
 button {
-  width: 120px;
+  width: auto;
   height: 40px;
   border: 2px solid black;
   border-radius: 10%;

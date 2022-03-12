@@ -11,6 +11,24 @@ function Component() {
     { name: "Van", age: 18, classType: "react" },
   ]);
 
+  const INIT_DATA = {
+    index: 0,
+    name: "",
+    age: "",
+    classType: "react",
+    nameSearch: "",
+  };
+
+  function createLogger(namespace) {
+    function logger(message) {
+      console.log(`[${namespace}] ${message}`);
+    }
+    return logger;
+  }
+  const logDebug = createLogger("DEBUG");
+
+  const [formData, setFormData] = React.useState(INIT_DATA);
+
   const transferJavaToReactClass = (item, index) => {
     usersReact.push(item);
     usersJava.splice(index, 1);
@@ -25,7 +43,7 @@ function Component() {
   };
 
   const User = (props) => {
-    const { name, age, handleTransfer, handleUpdate } = props;
+    const { name, age, handleTransfer, handleUpdate, handleDeleteUser } = props;
     return (
       <div>
         <span>
@@ -36,6 +54,9 @@ function Component() {
         </button>
         <button type="button" onClick={() => handleTransfer()}>
           Transfer
+        </button>
+        <button type="button" onClick={() => handleDeleteUser()}>
+          Xóa
         </button>
       </div>
     );
@@ -48,16 +69,6 @@ function Component() {
       alert("Class is empty!");
     }
   }, [usersJava.length, usersReact.length]);
-
-  const INIT_DATA = {
-    index: 0,
-    name: "",
-    age: "",
-    classType: "react",
-    nameSearch: "",
-  };
-
-  const [formData, setFormData] = React.useState(INIT_DATA);
 
   //xu li input
   const handleInput = (e) => {
@@ -115,64 +126,125 @@ function Component() {
       index: index,
     });
     document.getElementById("submit").innerHTML = "Update";
+    autoFocus.current.focus();
   };
 
-  //search du lieu
-  const handleInputSearch = (e) => {
-    const value = e.target.value;
-    setFormData({
-      ...formData,
-      [e.target.name]: value,
-    });
+  // tim kiem data
+  const SORT = {
+    NO: 0,
+    UP: 1,
+    DOWN: 2,
   };
-
-  const handleSearch = () => {
-    const newArrUsersJava = usersJava.filter((user) => {
-      return formData.nameSearch === user.name.toLowerCase();
-    });
-    setUserJava(newArrUsersJava);
-
-    const newArrUserReact = usersReact.filter((user) => {
-      return formData.nameSearch === user.name.toLowerCase();
-    });
-    setUserReact(newArrUserReact);
+  const [sortTitle, setSortTitle] = React.useState(SORT.NO);
+  const [searchUser, setSearchUser] = React.useState();
+  const autoFocus = React.useRef();
+  const totalGetUser = (list) => {
+    logDebug("GetUser");
+    let res = [...list];
+    if (searchUser) {
+      res = res.filter((el) => {
+        return el.name.toLowerCase().includes(searchUser);
+      });
+    }
+    if (sortTitle !== SORT.NO) {
+      if (sortTitle === SORT.UP) {
+        res.sort((a, b) => {
+          return a.age - b.age;
+        });
+      } else if (sortTitle === SORT.DOWN) {
+        res.sort((a, b) => {
+          return b.age - a.age;
+        });
+      }
+    }
+    return res;
   };
+  const getUserJava = React.useMemo(
+    () => totalGetUser(usersJava),
+    [searchUser, sortTitle, usersJava]
+  );
+  const getUserReact = React.useMemo(
+    () => totalGetUser(usersReact),
+    [searchUser, sortTitle, usersReact]
+  );
+
+  // const handleSort = () => {
+  //   const newusersJava = [...usersJava];
+  //   const arrUsersJavaSorted = newusersJava.sort((a, b) =>
+  //     a.age > b.age ? 1 : -1
+  //   );
+  //   const newusersReact = [...usersReact];
+  //   const arrUserReactSorted = newusersReact.sort((a, b) =>
+  //     a.age > b.age ? 1 : -1
+  //   );
+  //   setUserJava(arrUsersJavaSorted);
+  //   setUserReact(arrUserReactSorted);
+  // };
+
+  // sap xep data
+
+  const totalSetTitle = () => {
+    logDebug("hàm setTitle");
+
+    if (sortTitle === SORT.NO) {
+      return "no";
+    } else if (sortTitle === SORT.UP) {
+      return "up";
+    } else {
+      return "down";
+    }
+  };
+  const setTitle = React.useMemo(() => totalSetTitle(), [sortTitle]);
+
   const handleSort = () => {
-    const newusersJava = [...usersJava];
-    const arrUsersJavaSorted = newusersJava.sort((a, b) =>
-      a.age > b.age ? 1 : -1
-    );
-    const newusersReact = [...usersReact];
-    const arrUserReactSorted = newusersReact.sort((a, b) =>
-      a.age > b.age ? 1 : -1
-    );
-    setUserJava(arrUsersJavaSorted);
-    setUserReact(arrUserReactSorted);
+    if (sortTitle === SORT.NO) {
+      setSortTitle(SORT.UP);
+    } else if (sortTitle === SORT.UP) {
+      setSortTitle(SORT.DOWN);
+    } else {
+      setSortTitle(SORT.NO);
+    }
   };
 
+  const deleteData = (el, index) => {
+    console.log(index);
+    console.log("el", el);
+    if (el.classType === "react") {
+      let confirmAction = confirm("Bạn có chắc muốn xóa ?");
+      if (confirmAction) {
+        usersReact.splice(index, 1);
+        setUserReact([...usersReact]);
+      }
+    } else if (el.classType === "java") {
+      let confirmAction = confirm("Bạn có chắc muốn xóa ?");
+      if (confirmAction) {
+        usersJava.splice(index, 1);
+        setUserJava([...usersJava]);
+      }
+    }
+  };
   return (
     <div>
       <input
         type="text"
         placeholder="search by name"
         id="search"
-        name="nameSearch"
-        value={formData.nameSearch}
+        name="searchUser"
+        value={searchUser}
         onChange={(e) => {
-          handleInputSearch(e);
+          setSearchUser(e.target.value);
         }}
       />
-      <button type="button" onClick={handleSearch}>
+      {/* <button type="button" onClick={handleSearch}>
         Search
-      </button>
+      </button> */}
       <button type="button" onClick={handleSort}>
-        SoftByAge
+        SoftByAge : {setTitle}
       </button>
 
       <h1>List member of Java Class</h1>
       {usersJava.length > 0 ? (
-        usersJava.map((item, index) => {
-          console.log(item);
+        getUserJava.map((item, index) => {
           return (
             <User
               key={index}
@@ -180,6 +252,7 @@ function Component() {
               age={item.age}
               handleTransfer={() => transferJavaToReactClass(item, index)}
               handleUpdate={() => updateData(item, index)}
+              handleDeleteUser={() => deleteData(item, index)}
             />
           );
         })
@@ -189,7 +262,7 @@ function Component() {
 
       <h1>List member of React Class</h1>
       {usersReact.length > 0 ? (
-        usersReact.map((item, index) => {
+        getUserReact.map((item, index) => {
           return (
             <User
               key={index}
@@ -197,6 +270,7 @@ function Component() {
               age={item.age}
               handleTransfer={() => transferReactToJavaClass(item, index)}
               handleUpdate={() => updateData(item, index)}
+              handleDeleteUser={() => deleteData(item, index)}
             />
           );
         })
@@ -217,6 +291,7 @@ function Component() {
           value={formData.name}
           onChange={(e) => handleInput(e)}
           type="text"
+          ref={autoFocus}
         />
         Age{" "}
         <input
